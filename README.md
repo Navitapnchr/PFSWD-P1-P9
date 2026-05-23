@@ -1,6 +1,7 @@
 # Toko Online — Full Stack Web Development
 
 Project marketplace sederhana berbasis Laravel 11, Inertia.js, dan Vue 3 yang dikembangkan bertahap berdasarkan modul praktikum P1–P7.
+link modul : https://drive.google.com/drive/folders/13hBtfSo4lEzuQRpY6MWa5-3NVutL4r9q?usp=sharing
 
 ---
 
@@ -162,21 +163,3 @@ npm run dev
 ```
 
 ---
-
-# Screenshot
-
-Tambahkan screenshot:
-
-* Login
-* Dashboard
-* CRUD Produk
-* Katalog Produk
-* Detail Produk
-* Review Produk
-
----
-
-# Author
-
-Nama: NAMA KAMU
-Mata Kuliah: Full Stack Web Development
