@@ -33,4 +33,25 @@ class HomeController extends Controller
                 ->get(),
         ]);
     }
+
+    public function tentang(): Response
+    {
+        return Inertia::render('Tentang', [
+            'fitur' => [
+                'Admin dapat mengelola kategori',
+                'Seller dapat menambahkan produk',
+                'Buyer dapat melihat produk',
+                'Sistem multi role',
+                'Upload gambar produk',
+                'Review produk',
+            ],
+
+            'teknologi' => [
+                'Laravel 11',
+                'React + Inertia',
+                'Tailwind CSS',
+                'MySQL',
+            ]
+        ]);
+    }
 }

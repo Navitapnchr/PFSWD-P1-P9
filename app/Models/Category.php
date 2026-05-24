@@ -35,6 +35,12 @@ class Category extends Model
         });
     }
 
+    // WAJIB supaya route pakai slug
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function products()
     {
         return $this->belongsToMany(Product::class);
