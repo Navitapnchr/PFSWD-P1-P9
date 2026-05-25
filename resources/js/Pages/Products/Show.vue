@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Link, useForm } from "@inertiajs/vue3";
+import { Link, useForm, router } from "@inertiajs/vue3";
 
 defineProps({
     product: Object,
@@ -11,7 +11,14 @@ const form = useForm({
     comment: "",
 });
 
+const addToCart = (productId) => {
+    router.post(`/cart/${productId}`);
+};
+
 const submitReview = (productId) => {
+    const addToCart = (productId) => {
+        router.post(`/cart/${productId}`);
+    };
     form.post(`/products/${productId}/reviews`, {
         preserveScroll: true,
 
@@ -115,7 +122,15 @@ const submitReview = (productId) => {
                                     {{ product.status }}
                                 </span>
                             </div>
-
+                            <!-- ACTION -->
+                            <div class="mt-10">
+                                <button
+                                    @click="addToCart(product.id)"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl transition"
+                                >
+                                    + Tambah ke Keranjang
+                                </button>
+                            </div>
                             <!-- DESCRIPTION -->
                             <div class="mt-10">
                                 <h2
