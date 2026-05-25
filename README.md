@@ -105,6 +105,25 @@ Fitur buyer:
 
 ---
 
+## P8 — Checkout & Order Management
+
+Fitur buyer:
+
+* Add to cart
+* Keranjang belanja
+* Checkout produk
+* Pembuatan order otomatis
+* Order items
+* Riwayat pesanan
+* Cancel pesanan
+* Filter status pesanan
+* Dashboard buyer
+* Statistik pembelian
+* Pengurangan stok otomatis
+* Pengembalian stok saat cancel
+
+---
+
 # Tech Stack
 
 * Laravel 11
