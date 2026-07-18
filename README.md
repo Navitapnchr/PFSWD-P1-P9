@@ -1,165 +1,277 @@
-# Toko Online — Full Stack Web Development
+# P9 — Pembayaran dan Status Order
 
-Project marketplace sederhana berbasis Laravel 11, Inertia.js, dan Vue 3 yang dikembangkan bertahap berdasarkan modul praktikum P1–P7.
-link modul : https://drive.google.com/drive/folders/13hBtfSo4lEzuQRpY6MWa5-3NVutL4r9q?usp=sharing
+## Deskripsi
 
----
-
-# Progress Modul
-
-## P1 — Setup & Arsitektur Project
-
-Pada tahap ini dilakukan:
-
-* Setup Laravel 11
-* Setup Inertia.js + Vue 3
-* Setup Tailwind CSS
-* Struktur folder frontend & backend
-* Konfigurasi database MySQL
-* Routing dasar aplikasi
-* Layout utama aplikasi
+Pada modul P9, sistem checkout dikembangkan dengan fitur pembayaran dan manajemen status pesanan. Buyer dapat mengunggah bukti pembayaran setelah checkout, kemudian seller melakukan verifikasi pembayaran dan mengirim pesanan. Buyer juga dapat mengonfirmasi bahwa barang telah diterima.
 
 ---
 
-## P2 — Authentication
+## Fitur Utama
 
-Fitur yang dibuat:
+### 1. Upload Bukti Pembayaran (Buyer)
 
-* Register
-* Login
-* Logout
-* Middleware auth
-* Dashboard user
-* Proteksi halaman login
+Setelah checkout berhasil, buyer dapat:
 
----
+* Melihat daftar pesanan
+* Membuka halaman pembayaran
+* Mengunggah bukti transfer
+* Mengirim bukti pembayaran ke seller
 
-## P3 — Middleware & Role
+Status pesanan berubah:
 
-Implementasi:
-
-* Middleware custom role
-* Role:
-
-  * Admin
-  * Seller
-  * Buyer
-* Proteksi route berdasarkan role
-* Redirect sesuai role user
+```text
+pending → paid
+```
 
 ---
 
-## P4 — CRUD Kategori
+### 2. Verifikasi Pembayaran (Seller)
 
-Fitur admin:
+Seller dapat melihat daftar order masuk dan melakukan:
 
-* Tambah kategori
-* Edit kategori
-* Hapus kategori
-* List kategori
-* Validasi form kategori
-* Slug kategori
-* Icon kategori
+* Verifikasi pembayaran
+* Penolakan pembayaran
 
----
+Jika pembayaran diverifikasi:
 
-## P5 — CRUD Produk
+```text
+paid → processing
+```
 
-Fitur seller:
+Jika pembayaran ditolak:
 
-* Tambah produk
-* Edit produk
-* Hapus produk
-* Status produk
-* Relasi kategori produk
-* Upload foto produk
-* Preview produk
+```text
+paid → cancelled
+```
 
 ---
 
-## P6 — Katalog Produk
+### 3. Pengiriman Pesanan (Seller)
 
-Fitur marketplace:
+Setelah pembayaran diverifikasi, seller dapat mengirim pesanan.
 
-* Halaman katalog produk
-* Search produk
-* Filter kategori
-* Sort produk
-* Pagination
-* Detail produk
-* Produk terbaru
-* Halaman kategori
-* Badge produk baru
-* View counter produk
+Status berubah:
+
+```text
+processing → shipped
+```
 
 ---
 
-## P7 — Review Produk
+### 4. Konfirmasi Barang Diterima (Buyer)
 
-Fitur buyer:
+Buyer dapat mengonfirmasi bahwa pesanan telah diterima.
 
-* Review produk
-* Rating produk
-* Daftar ulasan
-* Statistik review
+Status berubah:
+
+```text
+shipped → delivered
+```
+
+Field `delivered_at` akan otomatis terisi waktu penerimaan barang.
 
 ---
 
-# Tech Stack
+## Alur Status Pesanan
 
-* Laravel 11
-* Vue 3
+```text
+pending
+   ↓
+paid
+   ↓
+processing
+   ↓
+shipped
+   ↓
+delivered
+```
+
+Atau:
+
+```text
+pending
+   ↓
+cancelled
+```
+
+```text
+paid
+   ↓
+cancelled
+```
+
+---
+
+## Dashboard Buyer
+
+Dashboard buyer menampilkan:
+
+* Total Pesanan
+* Pesanan Pending
+* Total Belanja
+
+Serta shortcut menuju:
+
+* Produk
+* Keranjang
+* Pesanan Saya
+
+---
+
+## Dashboard Seller
+
+Dashboard seller menampilkan shortcut:
+
+* Kelola Produk
+* Order Masuk
+
+Seller dapat:
+
+* Verifikasi pembayaran
+* Menolak pembayaran
+* Mengirim pesanan
+
+---
+
+# Latihan Mandiri
+
+## Latihan 1 — Konfirmasi Barang Diterima
+
+Menambahkan fitur konfirmasi pesanan diterima oleh buyer.
+
+### Implementasi
+
+* Route:
+
+```php
+POST /orders/{order}/deliver
+```
+
+* Controller:
+
+```php
+OrderController@deliver
+```
+
+### Perubahan Status
+
+```text
+shipped → delivered
+```
+
+### Data Tambahan
+
+```php
+delivered_at = now()
+```
+
+---
+
+## Latihan 2 — Flash Notification
+
+Menambahkan notifikasi untuk setiap perubahan status order.
+
+### Buyer
+
+* Checkout berhasil
+* Bukti pembayaran berhasil dikirim
+* Pesanan dibatalkan
+* Pesanan diterima
+
+### Seller
+
+* Pembayaran diverifikasi
+* Pembayaran ditolak
+* Pesanan berhasil dikirim
+
+---
+
+## Latihan 3 — Riwayat Status Order
+
+Menambahkan sistem pencatatan perubahan status pesanan.
+
+### Tabel Baru
+
+```text
+order_status_logs
+```
+
+Kolom:
+
+```text
+id
+order_id
+status
+note
+created_at
+updated_at
+```
+
+### Relasi
+
+Order:
+
+```php
+hasMany(OrderStatusLog::class)
+```
+
+OrderStatusLog:
+
+```php
+belongsTo(Order::class)
+```
+
+### Pencatatan Otomatis
+
+Setiap perubahan status akan membuat log baru.
+
+Contoh:
+
+```text
+pending      → Pesanan dibuat
+paid         → Bukti pembayaran diterima
+processing   → Pembayaran diverifikasi
+shipped      → Pesanan dikirim
+delivered    → Pesanan diterima pembeli
+cancelled    → Pesanan dibatalkan
+```
+
+### Timeline Riwayat
+
+Buyer dapat melihat timeline perubahan status pada halaman detail pesanan.
+
+Contoh:
+
+```text
+Delivered
+Pesanan diterima pembeli
+09 Juni 2026 15:20
+
+Shipped
+Pesanan dikirim seller
+09 Juni 2026 14:45
+
+Processing
+Pembayaran diverifikasi seller
+09 Juni 2026 14:10
+
+Paid
+Bukti pembayaran berhasil dikirim
+09 Juni 2026 13:55
+```
+
+---
+
+## Teknologi
+
+* Laravel 12
 * Inertia.js
+* Vue 3
 * Tailwind CSS
 * MySQL
-* Vite
 
 ---
 
-# Installation
+## Hasil Modul
 
-Clone repository:
-
-```bash id="u7k2qx"
-git clone https://github.com/USERNAME/toko-online.git
-```
-
-Masuk folder project:
-
-```bash id="m4v9rp"
-cd toko-online
-```
-
-Install dependency:
-
-```bash id="x2n8tm"
-composer install
-npm install
-```
-
-Copy file env:
-
-```bash id="q5r1vk"
-cp .env.example .env
-```
-
-Generate key:
-
-```bash id="c8m4xp"
-php artisan key:generate
-```
-
-Migrasi database:
-
-```bash id="p7v2rd"
-php artisan migrate --seed
-```
-
-Jalankan server:
-
-```bash id="w1q8kn"
-php artisan serve
-npm run dev
-```
-
----
+Fitur pembayaran dan manajemen status order berhasil diimplementasikan mulai dari upload bukti pembayaran hingga pesanan diterima oleh buyer, lengkap dengan riwayat perubahan status pesanan.
